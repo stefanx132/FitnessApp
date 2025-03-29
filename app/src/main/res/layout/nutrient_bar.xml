@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/carbTextViewHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="20dp"
+        android:text="@string/carbsbar"
+        android:textColor="@color/lightOrange"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/fatTextViewHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/proteinTextViewHome"
+        app:layout_constraintStart_toEndOf="@+id/carbTextViewHome"
+        android:layout_marginTop="8dp"
+        android:text="@string/fatsbar"
+        android:textColor="@color/lightOrange"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/proteinTextViewHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/proteinsbar"
+        android:textColor="@color/lightOrange"
+        android:textStyle="bold"/>
+
+    <ProgressBar
+        android:id="@+id/CarbsprogressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/carbTextViewHome"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="1dp"
+        android:progressTint="@color/yellow"/>
+
+    <TextView
+        android:id="@+id/carbvaluetext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/CarbsprogressBar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="20dp"
+        android:text="@string/nutrientsvalue"
+        android:textColor="@color/lightOrange"/>
+
+    <ProgressBar
+        android:id="@+id/ProteinprogressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/proteinTextViewHome"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="1dp"
+        android:progressTint="@color/green"/>
+
+    <TextView
+        android:id="@+id/proteinValuetext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/ProteinprogressBar"
+        android:text="@string/nutrientsvalue"
+        android:textColor="@color/lightOrange"/>
+
+    <ProgressBar
+        android:id="@+id/FatssprogressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/fatTextViewHome"
+        app:layout_constraintStart_toEndOf="@+id/CarbsprogressBar"
+        app:layout_constraintEnd_toStartOf="@+id/ProteinprogressBar"
+        android:layout_marginTop="1dp"
+        android:progressTint="#FC54B3"/>
+
+    <TextView
+        android:id="@+id/fatvaluetext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nutrientsvalue"
+        app:layout_constraintStart_toEndOf="@+id/carbvaluetext"
+        app:layout_constraintEnd_toStartOf="@+id/proteinValuetext"
+        app:layout_constraintTop_toBottomOf="@+id/FatssprogressBar"
+        android:textColor="@color/lightOrange"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

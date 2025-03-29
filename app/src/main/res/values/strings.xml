@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">FitnessApp</string>
+    <string name="api_key">0c7af53c79ca4e0a889cb1f422c08e8b</string>
+    <string name="titlehome">Home</string>
+    <string name="titleprogress">Progress</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="name_myfitness_app">MyFitness App</string>
+    <string name="carbsbar">Carbs</string>
+    <string name="fatsbar">Fats</string>
+    <string name="proteinsbar">Proteins</string>
+    <string name="nutrientsvalue">100g/100g</string>
+    <string name="caloriesprogresstextview">-----</string>
+    <string name="add_snack">Snack</string>
+    <string name="add_dinner">Dinner</string>
+    <string name="add_lunch">Lunch</string>
+    <string name="add_breakfast">Breakfast</string>
+    <string name="nutritional_information">Nutritional information</string>
+    <string name="add_calories">Calories: %.2f kcal</string>
+    <string name="add_proteins">Proteins: %.2fg</string>
+    <string name="add_fats">Fats: %.2fg</string>
+    <string name="add_carbohydrates">Carbohydrates: %.2fg</string>
+    <string name="grams">Grams</string>
+    <string name="add_weight">100: %.2f</string>
+    <string name="add_food_name">Food Name</string>
+    <string name="log_in_string">Log-In</string>
+    <string name="sign_up_string">Sign Up</string>
+    <string name="continue_as_guest_string">Continue as Guest</string>
+    <string name="fitness_app_text">Fitness App</string>
+    <string name="welcome_to_text_2">Welcome to</string>
+    <string name="male_gender_string">Male</string>
+    <string name="female_gender_string">Female</string>
+    <string name="sign_up_txt">Sign Up</string>
+    <string name="default_web_client_id">986608433804-i9229i7cl9fuubd4btciog3aq72v0c1l.apps.googleusercontent.com</string>
+    <string name="recommended_progress">We recommend this weight loss pace for long-\nterm success</string>
+
+    <string-array name="gender_options">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="activity_level_options">
+        <item>Sedentary</item>
+        <item>Lightly Active</item>
+        <item>Moderately Active</item>
+        <item>Very Active</item>
+        <item>Super Active</item>
+    </string-array>
+
+    <string-array name="goal_options">
+        <item>Maintain Weight</item>
+        <item>Lose Weight</item>
+        <item>Gain Weight</item>
+    </string-array>
+</resources>
