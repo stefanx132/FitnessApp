@@ -55,7 +55,7 @@ public class FoodFragment extends Fragment {
     private AlimentsAdapter adapter;
     private ApiService apiService;
     private String mealType;
-    private final String API_KEY = "9243c5262b7e4100b3efb98559ba228f";
+    private final String API_KEY = "secret_key";
     private FirebaseFirestore db;
 
     public static FoodFragment newInstance(String mealType){
