@@ -39,7 +39,7 @@
                 android:id="@+id/first_name_input"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="First name"
+                android:hint="Name"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
                 android:textAlignment="center"

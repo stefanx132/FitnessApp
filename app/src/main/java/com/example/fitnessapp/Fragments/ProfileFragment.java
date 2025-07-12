@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.Manifest;
@@ -56,6 +58,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.w3c.dom.Text;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,13 +94,17 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         initComponents(view);
-//        String savedUri = userPreferences.getString("profileImageUri", null);
-//        if (savedUri != null) {
-//            addUserPhoto.setImageURI(Uri.parse(savedUri));
-//        }
+        String savedPath = userPreferences.getString("profileImagePath", null);
+        if (savedPath != null) {
+            File imgFile = new File(savedPath);
+            if (imgFile.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(savedPath);
+                addUserPhoto.setImageBitmap(bitmap);
+            }
+        }
         ((MainActivity) requireActivity()).enableSwipeToHome(view,ProfileFragment.this);
         checkForGuestUser();
-        //userPhoto();
+        userPhoto();
 
         bottomSheetObjectiveChange();
 
@@ -136,6 +144,11 @@ public class ProfileFragment extends Fragment {
         userPreferences.edit().clear().apply();
         quizPreferences.edit().clear().apply();
         FirebaseAuth.getInstance().signOut();
+
+        File file = new File(requireContext().getFilesDir(), "profile_image.jpg");
+        if (file.exists()) {
+            file.delete();
+        }
 
         Intent intent = new Intent(requireContext(), UserActivity.class);
         intent.putExtra("fromSignOut", true);
@@ -260,12 +273,32 @@ public class ProfileFragment extends Fragment {
             }
 
             if (imageUri != null) {
-                addUserPhoto.setImageURI(imageUri); // display image
+                try {
+                    InputStream inputStream = requireContext().getContentResolver().openInputStream(imageUri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    inputStream.close();
 
-                // Save to SharedPreferences
-                userPreferences.edit()
-                        .putString("profileImageUri", imageUri.toString())
-                        .apply();
+                    // Save bitmap to internal storage
+                    File file = new File(requireContext().getFilesDir(), "profile_image.jpg");
+                    FileOutputStream fos = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                    fos.flush();
+                    fos.close();
+
+                    // Show the image
+                    addUserPhoto.setImageBitmap(bitmap);
+
+                    // Save the file path instead of content URI
+                    userPreferences.edit()
+                            .putString("profileImagePath", file.getAbsolutePath())
+                            .apply();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(requireContext(), "Failed to load image", Toast.LENGTH_SHORT).show();
+                    Log.d("ProfileFragment","Error: " + e.getMessage());
+                }
+
             }
         }
     }
@@ -440,16 +473,32 @@ public class ProfileFragment extends Fragment {
             layout.setVisibility(View.VISIBLE);
             userEditTxt.setVisibility(View.VISIBLE);
 
-            saveOption.setOnClickListener(v ->  {
-                String height = userEditTxt.getText().toString().trim();
-                editor.putString(quizKey,height);
-                editor.apply();
-                textView.setText(height + " cm");
+            saveOption.setOnClickListener(v -> {
+                String heightStr = userEditTxt.getText().toString().trim();
 
-                refreshObjective();
-                refreshHome();
+                if (heightStr.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please enter a valid height", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                bottomSheetDialog.dismiss();
+                try {
+                    int height = Integer.parseInt(heightStr);
+                    if (height < 50 || height > 300) {
+                        Toast.makeText(requireContext(), "Height must be between 50 and 300 cm", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    editor.putString(quizKey, String.valueOf(height));
+                    editor.apply();
+                    textView.setText(height + " cm");
+
+                    refreshObjective();
+                    refreshHome();
+                    bottomSheetDialog.dismiss();
+
+                } catch (NumberFormatException e) {
+                    Toast.makeText(requireContext(), "Invalid number format for height", Toast.LENGTH_SHORT).show();
+                }
             });
         }else if(textView.getId() == R.id.user_saved_weight_txt_view){
             optionsListView.setVisibility(View.GONE);
@@ -493,17 +542,33 @@ public class ProfileFragment extends Fragment {
             layout.setHint("Write age");
             userEditTxt.setVisibility(View.VISIBLE);
 
-            saveOption.setOnClickListener(v ->  {
-                String age = userEditTxt.getText().toString().trim();
-                Log.d("ProfileFragment","Age: " + age);
-                editor.putInt(quizKey,Integer.parseInt(age));
-                editor.apply();
-                textView.setText(age + " years");
+            saveOption.setOnClickListener(v -> {
+                String ageStr = userEditTxt.getText().toString().trim();
 
-                refreshObjective();
-                refreshHome();
+                if (ageStr.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please enter your age", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                bottomSheetDialog.dismiss();
+                try {
+                    int age = Integer.parseInt(ageStr);
+                    if (age < 5 || age > 120) {
+                        Toast.makeText(requireContext(), "Age must be between 5 and 120 years", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Log.d("ProfileFragment", "Age: " + age);
+                    editor.putInt(quizKey, age);
+                    editor.apply();
+                    textView.setText(age + " years");
+
+                    refreshObjective();
+                    refreshHome();
+                    bottomSheetDialog.dismiss();
+
+                } catch (NumberFormatException e) {
+                    Toast.makeText(requireContext(), "Invalid number format for age", Toast.LENGTH_SHORT).show();
+                }
             });
         }
     }

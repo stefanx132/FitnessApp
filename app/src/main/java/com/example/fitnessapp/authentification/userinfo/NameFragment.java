@@ -73,7 +73,7 @@ public class NameFragment extends Fragment implements QuizData {
     private boolean isValid() {
         boolean isValueValid = true;
         if (tietFirstName.getText().toString().trim().isEmpty()) {
-            Toast.makeText(getContext(), "Provide first name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Provide name", Toast.LENGTH_SHORT).show();
             isValueValid = false;
         }
         if (tietAge.getText().toString().trim().isEmpty()) {

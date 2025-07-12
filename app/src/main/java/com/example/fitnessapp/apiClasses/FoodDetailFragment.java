@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -193,11 +194,17 @@ public class FoodDetailFragment extends Fragment {
 
     private void updateNutrientValuesBasedOnWeight() {
         weightText = weightEditText.getText().toString().trim();
-        if (weightText.isEmpty()) return;
+        if (weightText.isEmpty()){
+            Toast.makeText(getContext(), "Quantity cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         try {
             double newServingSize = Double.parseDouble(weightText);
-            if (newServingSize <= 0) return;
+            if (newServingSize <= 0) {
+                Toast.makeText(getContext(), "Quantity cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             double newCalories = (newServingSize * originalCalories) / servingSize;
             double newProteins = (newServingSize * originalProteins) / servingSize;
@@ -224,7 +231,11 @@ public class FoodDetailFragment extends Fragment {
         updateFoodBtn.setVisibility(View.VISIBLE);
         removeFoodBtn.setVisibility(View.VISIBLE);
         addFoodButton.setVisibility(View.GONE);
-        updateFoodBtn.setOnClickListener(v -> updateFirestore(cals, prots, fats, carbs, qty));
+        updateFoodBtn.setOnClickListener(v -> {
+            Double parsedQty = checkQuantity();
+            if (parsedQty == null) return;
+            updateFirestore(cals, prots, fats, carbs, qty);
+        });
         removeFoodBtn.setOnClickListener(v -> removeFoodFromFirestore());
     }
 
@@ -232,7 +243,33 @@ public class FoodDetailFragment extends Fragment {
         updateFoodBtn.setVisibility(View.GONE);
         removeFoodBtn.setVisibility(View.GONE);
         addFoodButton.setVisibility(View.VISIBLE);
-        addFoodButton.setOnClickListener(v -> saveInfoToFirestore(cals, prots, fats, carbs, qty, imageURL));
+        addFoodButton.setOnClickListener(v -> {
+            Double parsedQty = checkQuantity();
+            if (parsedQty == null) return;
+            saveInfoToFirestore(cals, prots, fats, carbs, parsedQty, imageURL);
+        });
+    }
+
+    @Nullable
+    private Double checkQuantity() {
+        String weightInput = weightEditText.getText().toString().trim();
+        if (weightInput.isEmpty()) {
+            Toast.makeText(getContext(), "Quantity cannont be empty", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+        double parsedQty;
+        try {
+            parsedQty = Double.parseDouble(weightInput);
+            if (parsedQty <= 0) {
+                Toast.makeText(getContext(), "Quantity must be greater than 0", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Invalid quantity", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        return parsedQty;
     }
 
     private void saveInfoToFirestore(double calories, double proteins, double fats, double carbs, double qty, String imageURL) {

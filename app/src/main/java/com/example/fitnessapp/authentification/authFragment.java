@@ -262,15 +262,15 @@ public class authFragment extends Fragment {
             Toast.makeText(getContext(), "Please enter email and password !", Toast.LENGTH_SHORT).show();
             return;
         }
-        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(),task ->{
+        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(requireActivity(),task ->{
            if(task.isSuccessful()){
                FirebaseUser user = mAuth.getCurrentUser();
+               assert user != null;
                saveUserToSharedPreferences(user.getEmail());
                getUserInfoDB(user);
-
            }else {
                Toast.makeText(getContext(), "Email or password error", Toast.LENGTH_SHORT).show();
-               Log.d("authFragment","Error: " + task.getException());
+               Log.d("authFragment","Error login: " + task.getException());
            }
         });
     }
@@ -330,21 +330,21 @@ public class authFragment extends Fragment {
 
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(getContext(), "Completează toate câmpurile!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Enter email and password !", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!password.equals(confirmPass)) {
-            Toast.makeText(getContext(), "Parolele nu coincid!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Password do not match !", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (password.length() < 6) {
-            Toast.makeText(getContext(), "Parola trebuie să aibă cel puțin 6 caractere!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Paswword must be at least 6 characters!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(),task -> {
+        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(requireActivity(),task -> {
             if(task.isSuccessful()){
                 FirebaseUser user = mAuth.getCurrentUser();
                 if(user != null){

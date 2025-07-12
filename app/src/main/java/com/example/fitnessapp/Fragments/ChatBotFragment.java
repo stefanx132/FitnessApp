@@ -31,7 +31,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ChatBotFragment extends Fragment {
-    private final String AIML_API_KEY = "secret_key";
+    private final String AIML_API_KEY = "853bb58bfaa1495e8830a065c78447aa";
     private EditText ingredientsEditText;
     private Button ingredientsBtn;
     private RecyclerView recipeRecyclerView;
@@ -82,30 +82,39 @@ public class ChatBotFragment extends Fragment {
 
     private void getRecipeFromAI(String prompt, int botIndex) {
         OkHttpClient client = new OkHttpClient();
-        String json = "{ \"model\": \"gpt-4o\", \"messages\": [{\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
 
-        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+        String json = "{ \"model\": \"gpt-4o\", " +
+                "\"messages\": [{\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
+
+        Log.d(TAG, "Sending request with JSON: " + json);
 
         Request request = new Request.Builder()
-                .url("https://api.aimlapi.com/v1/chat/completions")
-                .post(body)
+                .url("https://api.aimlapi.com/v1/chat/completions") // consider updating to correct endpoint if needed
+                .post(RequestBody.create(json, MediaType.parse("application/json")))
                 .addHeader("Authorization", "Bearer " + AIML_API_KEY)
                 .addHeader("Content-Type", "application/json")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
-            @Override public void onFailure(Call call, IOException e) {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "Network request failed", e);
                 requireActivity().runOnUiThread(() -> {
                     messages.set(botIndex, new Message("Something went wrong. Please try again.", false));
                     adapter.notifyItemChanged(botIndex);
                 });
-                Log.e(TAG, "Network error: " + e.getMessage());
             }
 
-            @Override public void onResponse(Call call, Response response) throws IOException {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, "HTTP Response code: " + response.code());
+                Log.d(TAG, "HTTP Response message: " + response.message());
+
                 if (response.isSuccessful()) {
                     try {
                         String res = response.body().string();
+                        Log.d(TAG, "Raw JSON response: " + res);
+
                         JSONObject jsonObject = new JSONObject(res);
                         String reply = jsonObject
                                 .getJSONArray("choices")
@@ -113,12 +122,25 @@ public class ChatBotFragment extends Fragment {
                                 .getJSONObject("message")
                                 .getString("content");
 
-                        animateBotReply(reply, botIndex);
+                        Log.d(TAG, "Extracted reply: " + reply);
+
+                        requireActivity().runOnUiThread(() -> animateBotReply(reply, botIndex));
                     } catch (Exception e) {
-                        Log.e(TAG, "JSON parsing error: " + e.getMessage());
+                        Log.e(TAG, "JSON parsing error: " + e.getMessage(), e);
+                        requireActivity().runOnUiThread(() -> {
+                            messages.set(botIndex, new Message("Invalid bot reply format.", false));
+                            adapter.notifyItemChanged(botIndex);
+                        });
                     }
                 } else {
-                    Log.e(TAG, "API failure: " + response.message());
+                    String errorBody = response.body() != null ? response.body().string() : "no body";
+                    Log.e(TAG, "API call failed with code " + response.code() + ": " + response.message());
+                    Log.e(TAG, "Error body: " + errorBody);
+
+                    requireActivity().runOnUiThread(() -> {
+                        messages.set(botIndex, new Message("Bot error " + response.code() + ": " + response.message(), false));
+                        adapter.notifyItemChanged(botIndex);
+                    });
                 }
             }
         });
@@ -140,11 +162,7 @@ public class ChatBotFragment extends Fragment {
                 currentText.append(c);
                 String partial = currentText.toString();
 
-                requireActivity().runOnUiThread(() -> {
-                    messages.get(newIndex).text = partial;
-                    adapter.notifyItemChanged(newIndex);
-                    recipeRecyclerView.scrollToPosition(newIndex);
-                });
+                updateBotMessage(partial, newIndex);
 
                 try {
                     Thread.sleep(20);
@@ -154,4 +172,13 @@ public class ChatBotFragment extends Fragment {
             }
         }).start();
     }
+
+    private void updateBotMessage(String text, int index) {
+        requireActivity().runOnUiThread(() -> {
+            messages.get(index).text = text;
+            adapter.notifyItemChanged(index);
+            recipeRecyclerView.scrollToPosition(index);
+        });
+    }
+
 }

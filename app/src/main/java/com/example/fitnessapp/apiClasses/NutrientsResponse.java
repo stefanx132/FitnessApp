@@ -9,7 +9,7 @@ public class NutrientsResponse {
     private String protein;
 
     @SerializedName("weightPerServing")
-    private WeightPerServing weightPerServing; // Nested structure for serving size
+    private WeightPerServing weightPerServing;
 
     // Nested class to handle weightPerServing
     public static class WeightPerServing {
